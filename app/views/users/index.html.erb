@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+</head>
+
+<body>
+    <div id="header">
+        <% if user_signed_in? %>
+                <%= link_to('Logout', destroy_user_session_path) %>
+        <% else %>
+                <%= link_to('Sign up', new_user_registration_path) %>
+                <br>
+                <%= link_to('Login', new_user_session_path) %>
+        <% end %>
+    </div>
+    <%= yield %>
+
+
+<table>
+  <% if user_signed_in? %>
+  <thead>
+    <h1>Account Balances</h1>
+    <tr>
+      <th>Savings</th>
+      <th>Checkings</th>
+      <th colspan="2"></th>
+    </tr>
+  </thead>
+  <% end %>
+
+  <tbody>
+      <% if user_signed_in? %>
+        <%= form_for current_user do |f| %>
+        <tr>
+        <td align="center"><%= current_user.savings_balance%></td>
+        <td align="center"><%= current_user.checkings_balance%></td>
+        </tr>
+        <tr>
+        <td align="center"><%= text_field_tag 'savings_diff', '0'%></td>
+        <td align="center"><%= text_field_tag 'checkings_diff', '0'%></td>
+        <%= f.hidden_field 'email' %>
+        <td><%= f.submit 'Deposit' %>
+        </tr>
+      <% end %>
+      <% else %>
+        <td>Not signed in </td>
+      <% end %>
+  </tbody>
+</table>
+<br>
+</body>
+
+</html>

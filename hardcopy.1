@@ -1,0 +1,53 @@
+  4 #class SessionsController resource_name, :recall => "# {controller_path}#failure"
+  3 class SessionsController < Devise::SessionsController
+  2
+  1     def sign_in_and_redirect(resource_or_scope, resource=nil)
+5           print "YOYO OVERLOAD WORKED DAWG"
+  1         scope = Devise::Mapping.find_scope!(resource_or_scope)
+  2         resource ||= resource_or_scope
+  3         sign_in(scope, resource) unless warden.user(scope) == resource
+  4         return render :json => {:success => true}
+  5     end
+  6
+  7     def failure
+  8         return render :json => {:success => false, :errors => ["Login failed."]}
+  9     end
+ 10 end
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+"app/controllers/sessions_controller.rb" 15L, 582C written                             5,41          All
