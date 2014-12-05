@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="utf-8">
+      <title>GoWild! Banking</title>
+      <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <%= stylesheet_link_tag "style.css" %>
 </head>
 
 <body>
@@ -23,7 +27,7 @@
     <thead>
     <h1>Account Balances</h1>
     <% if current_user.accounts.count <= 0 %>
-        <th>No accounts found</th>
+        <th>No accounts found, please contact your local teller!</th>
     <% else %>
         <tr>
         <th style="padding:0 15px 0 15px">Account Type</th>
@@ -46,17 +50,61 @@
                     <td align="center"><%= acc.balance %></td>
                     <td align="center"><%= text_field_tag 'amount', '0'%></td>
                     <%= f.hidden_field 'id' %>
-                    <td><%= f.submit 'Deposit' %>
+                    <td><%= f.submit 'Deposit' %></td>
+                    <td><button type='button' Class=<%=acc.id%>>Show transactions</button></td>
                     </tr>
+
+                    <% if acc.transactions.count != 0%>
+                        <tr align="center">
+                        <td><div Class="hidden <%=acc.id%>" style="font-weight:bold">Transaction Type</div></td>
+                        <td><div Class="hidden <%=acc.id%>" style="font-weight:bold">By</div></td>
+                        <td><div Class="hidden <%=acc.id%>" style="font-weight:bold">Amount</div></td>
+                        <td><div Class="hidden <%=acc.id%>" style="font-weight:bold">Date</div></td>
+                        </tr>
+                    <% else %>
+                        <tr align="center">
+                        <td><div Class="hidden <%=acc.id%>" style="font-weight:bold">No transactions</div></td>
+                        </tr>
+
+                    <% end %>
+
+                    <% acc.transactions.each do |transaction| %>
+                    <tr align="center">
+                        <td><div Class="hidden <%=acc.id%>"><%= transaction.transaction_type%></div></td>
+                        <td><div Class="hidden <%=acc.id%>"><%= transaction.by%></div></td>
+                        <td><div Class="hidden <%=acc.id%>"><%= transaction.amount%></div></td>
+                        <td><div Class="hidden <%=acc.id%>"><%= transaction.created_at%></div></td>
+                    </tr>
+                    <% end %>
+                    <script>
+                    $( "button."+<%=acc.id%> ).click(function() {
+                        $( "div."+<%=acc.id%> ).toggle( "slow" );
+                        var el = $(this);
+                        el.text() == "Show transactions" ? el.text("Hide transactions") :
+                                                           el.text("Show transactions");
+                    });
+                    </script>
+
+                    <tr class="strikeout">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    </tr>
+
                 <% end %>
             <% end %>
         <% end %>
+
     <% else %>
         <td>Not signed in </td>
     <% end %>
 </tbody>
 </table>
 <br>
+
+
 </body>
 
 

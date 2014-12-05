@@ -65,6 +65,11 @@ class Api::SessionsController < Devise::SessionsController
         puts "post search"
         if not @account.nil?
             @account.balance += @amount
+            @transaction = Transaction.new
+            @transaction.amount = @amount
+            @transaction.by = current_user.email
+            @transaction.transaction_type = "deposit"
+            @account.transactions.push @transaction
             @account.save
             render :json => {:success => true}
         else
