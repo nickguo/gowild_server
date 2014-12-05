@@ -6,9 +6,8 @@ class AccountsController < ApplicationController
 
     def update
         @account = set_account
-        amount = params[:amount]
-        @account.balance += amount.to_f
-        @account.save
+        amount = params[:amount].to_f
+        @account.update_balance(amount, current_user, "deposit")
         redirect_to(:back)
     end
 

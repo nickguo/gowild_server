@@ -46,27 +46,6 @@ class UsersController < ApplicationController
   def update
     @user =  set_user
 
-#if @user.update_attributes(params[:user])
-=begin    if @user.update_attributes(user_params)
-        redirect_to @user
-    else
-        render "user"
-    end"""
-=end
-
-    checkings_diff = params[:checkings_diff]
-    savings_diff = params[:savings_diff]
-    if checkings_diff
-        @user.checkings_balance = @user.checkings_balance ?
-                                  @user.checkings_balance + checkings_diff.to_f
-                                  : checkings_diff.to_f
-    end
-    if savings_diff
-        @user.savings_balance = @user.savings_balance ?
-                                @user.savings_balance + savings_diff.to_f
-                                : savings_diff.to_f
-    end
-
     respond_to do |format|
       if @user.update(user_params)
         format.html { redirect_to @user, notice: 'User was successfully updated.' }

@@ -31,17 +31,6 @@ class Api::SessionsController < Devise::SessionsController
                           :info => { :accounts => current_user.accounts} }
     end
 
-    def update_balance
-        if not current_user.nil?
-            savings_diff = params[:balance].to_f
-            current_user.savings_balance= current_user.savings_balance + savings_diff
-            current_user.save
-            render :json => {:success => true}
-        else
-            render :json => {:success => false}
-        end
-    end
-
     def create_account
         @account = Account.new
         @account.balance = 0
@@ -58,19 +47,10 @@ class Api::SessionsController < Devise::SessionsController
 
     def deposit
         @account_number = params[:account_number].to_i
-        @amount = params[:amount].to_i
+        @amount = params[:amount].to_f
         @account = current_user.accounts.where(:account_number => @account_number).first
-        puts "pre search"
-        puts @account
-        puts "post search"
         if not @account.nil?
-            @account.balance += @amount
-            @transaction = Transaction.new
-            @transaction.amount = @amount
-            @transaction.by = current_user.email
-            @transaction.transaction_type = "deposit"
-            @account.transactions.push @transaction
-            @account.save
+            @account.update_balance(@amount, current_user, "deposit")
             render :json => {:success => true}
         else
             render :json => {:success => false}
