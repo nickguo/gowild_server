@@ -4,34 +4,34 @@ class Api::SessionsController < Devise::SessionsController
   # Resets the authentication token each time! Won't allow you to login on two devices
   # at the same time (so does logout).
   def create
-   puts 'ENTER WARDEN OKAY'
-   authenticate_user!(:scope => resource_name, :store => false,
-                        :recall => "#{controller_path}#failure")
-   if not current_user.nil?
-       render :status => 200,
-              :json => { :success => true,
-                         :info => "Logged in", 
-                         :data => { :balance => current_user.savings_balance} }
-   else
-       render :json => {}.to_json, :success => false
-   end
-
-#puts 'WARDEN OKAY'
-#   sign_in(resource_name, resource)
-#   puts 'SIGN_IN OKAY'
- 
-#current_user.update authentication_token: nil
-#   puts 'CURRENT_USER.UPDATE OKAY'
-
-#   respond_to do |format|
-#     format.json {
-#       render :json => {
-#    :user => current_user,
-#         :status => :ok
-#         :authentication_token => current_user.authentication_token
-#       }
-#     }
-#   end
+    case params[:request]  
+    when "login"
+       if not current_user.nil?
+           render :status => 200,
+                  :json => { :success => true,
+                             :info => "Logged in", 
+                             :data => { :balance => current_user.savings_balance} }
+       else
+           render :json => {}.to_json, :success => false
+       end
+    when "update_balance"
+       if not current_user.nil?
+           User.transaction do
+              @user = current_user
+              puts "current user balance: ", @user.savings_balance
+              savings_diff = params[:balance].to_f
+              puts "amount to add: ", savings_diff
+              @user.savings_balance= @user.savings_balance + savings_diff
+              puts "current user balance: ", @user.savings_balance
+              @user.save
+           end
+           render :json => {:success => true}
+       else
+           render :json => {:success => false}
+       end
+    else
+       render :json => {:error => "INVALID ACTION: " + params[:action]}
+    end
   end
 
   # DELETE /api/sign_out

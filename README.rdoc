@@ -1,5 +1,9 @@
 == README
 
+This is the ruby on rails server for our CSE 110 group: GoWild!
+
+Ruby version 
+
 This README would normally document whatever steps are necessary to get the
 application up and running.
 
