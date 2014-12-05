@@ -1,54 +1,76 @@
 class Api::SessionsController < Devise::SessionsController
 
-  # POST /api/sign_in
-  # Resets the authentication token each time! Won't allow you to login on two devices
-  # at the same time (so does logout).
-  def create
-    case params[:request]  
-    when "login"
-       if not current_user.nil?
-           render :status => 200,
-                  :json => { :success => true,
-                             :info => "Logged in", 
-                             :data => { :balance => current_user.savings_balance} }
-       else
-           render :json => {}.to_json, :success => false
-       end
-    when "update_balance"
-       if not current_user.nil?
-           User.transaction do
-              @user = current_user
-              puts "current user balance: ", @user.savings_balance
-              savings_diff = params[:balance].to_f
-              puts "amount to add: ", savings_diff
-              @user.savings_balance= @user.savings_balance + savings_diff
-              puts "current user balance: ", @user.savings_balance
-              @user.save
-           end
-           render :json => {:success => true}
-       else
-           render :json => {:success => false}
-       end
-    else
-       render :json => {:error => "INVALID ACTION: " + params[:action]}
-    end
-  end
+    # POST /api/sign_in
+    # primary route parser that will sanitize and determine which action
+    # since it inherits from devise's sessions controller, has authentication
+    def create
+        # check if user information is valid
+        if current_user.nil? 
+            render :json => {:success => false,
+                             :error => "INVALID USER"}
+            return
+        end
 
-  # DELETE /api/sign_out
-  def destroy
- 
-   respond_to do |format|
-     format.json {
-       if current_user
-         current_user.update authentication_token: nil
-         signed_out = (Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name))
-         render :json => {}.to_json, :status => :ok
-       else
-         render :json => {}.to_json, :status => :unprocessable_entity
-       end
-     }
-   end
-  end
+        # handle request
+        case params[:request]  
+            when "login"; login
+            when "update_balance"; update_balance
+            when "create_account"; create_account
+            when "deposit"; deposit 
+            else # action is invalid
+                render :json => {:success => false,
+                                 :error => "INVALID ACTION -> " + params[:request]}
+        end
+    end
+
+    # definitions for lolgin
+
+    # returns the user's information
+    def login 
+        render :json => { :success => true,
+                          :info => { :accounts => current_user.accounts} }
+    end
+
+    def update_balance
+        if not current_user.nil?
+            savings_diff = params[:balance].to_f
+            current_user.savings_balance= current_user.savings_balance + savings_diff
+            current_user.save
+            render :json => {:success => true}
+        else
+            render :json => {:success => false}
+        end
+    end
+
+    def create_account
+        @account = Account.new
+        @account.balance = 0
+        @account.account_type = "savings"
+        @account.account_number = rand(1290000000 .. 1299999999)
+        # loop to find a new account in case account id was already used
+        while Account.find_by_account_number(@account.account_number)!= nil
+            @account.account_number = rand(1290000000 .. 1299999999)
+        end
+        current_user.accounts.push @account
+        current_user.save
+        render :json => {:success => true}
+    end
+
+    def deposit
+        @account_number = params[:account_number].to_i
+        @amount = params[:amount].to_i
+        @account = current_user.accounts.where(:account_number => @account_number).first
+        puts "pre search"
+        puts @account
+        puts "post search"
+        if not @account.nil?
+            @account.balance += @amount
+            @account.save
+            render :json => {:success => true}
+        else
+            render :json => {:success => false}
+        end
+    end
 
 end
 

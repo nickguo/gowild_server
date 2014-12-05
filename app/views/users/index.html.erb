@@ -8,46 +8,53 @@
 <body>
     <div id="header">
         <% if user_signed_in? %>
-                <%= link_to('Logout', destroy_user_session_path) %>
+            <%= link_to('Logout', destroy_user_session_path) %>
         <% else %>
-                <%= link_to('Sign up', new_user_registration_path) %>
-                <br>
-                <%= link_to('Login', new_user_session_path) %>
+            <%= link_to('Sign up', new_user_registration_path) %>
+            <br>
+            <%= link_to('Login', new_user_session_path) %>
         <% end %>
     </div>
-    <%= yield %>
 
+<%= yield %>
 
 <table>
-  <% if user_signed_in? %>
-  <thead>
+<% if user_signed_in? %>
+    <thead>
     <h1>Account Balances</h1>
-    <tr>
-      <th>Savings</th>
-      <th>Checkings</th>
-      <th colspan="2"></th>
-    </tr>
-  </thead>
-  <% end %>
+    <% if current_user.accounts.count <= 0 %>
+        <th>No accounts found</th>
+    <% else %>
+        <tr>
+        <th style="padding:0 15px 0 15px">Account Type</th>
+        <th style="padding:0 15px 0 15px">Account Number</th>
+        <th style="padding:0 15px 0 15px">Balance</th>
+        <th colspan="2"></th>
+        </tr>
+    <% end %>
+    </thead>
+<% end %>
 
-  <tbody>
-      <% if user_signed_in? %>
-        <%= form_for current_user do |f| %>
-        <tr>
-        <td align="center"><%= current_user.savings_balance%></td>
-        <td align="center"><%= current_user.checkings_balance%></td>
-        </tr>
-        <tr>
-        <td align="center"><%= text_field_tag 'savings_diff', '0'%></td>
-        <td align="center"><%= text_field_tag 'checkings_diff', '0'%></td>
-        <%= f.hidden_field 'email' %>
-        <td><%= f.submit 'Deposit' %>
-        </tr>
-      <% end %>
-      <% else %>
+<tbody>
+    <% if user_signed_in? %>
+        <% if current_user.accounts.count != 0 %>
+            <% current_user.accounts.each do |acc| %>
+                <%= form_for acc do |f| %>
+                    <tr>
+                    <td align="center"><%= acc.account_type %></td>
+                    <td align="center"><%= acc.account_number %></td>
+                    <td align="center"><%= acc.balance %></td>
+                    <td align="center"><%= text_field_tag 'amount', '0'%></td>
+                    <%= f.hidden_field 'id' %>
+                    <td><%= f.submit 'Deposit' %>
+                    </tr>
+                <% end %>
+            <% end %>
+        <% end %>
+    <% else %>
         <td>Not signed in </td>
-      <% end %>
-  </tbody>
+    <% end %>
+</tbody>
 </table>
 <br>
 </body>
