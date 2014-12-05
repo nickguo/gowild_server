@@ -5,5 +5,7 @@ This is the ruby on rails server for our CSE 110 group: GoWild!
 Ruby Gems used: 
 
 Rails v4.1.7
+
 mysql2 v0.3.16
+
 Devise v3.4.1
