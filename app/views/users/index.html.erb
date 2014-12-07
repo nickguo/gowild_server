@@ -1,54 +1,18 @@
 <!DOCTYPE html>
 
+<%= render :partial => "shared/header" %>
+
 <html lang="en">
 
-<head>
-    <meta charset="utf-8">
-      <title>GoWild! Banking</title>
-      <script src="//code.jquery.com/jquery-1.10.2.js"></script>
-
-    <link href="http://s3.amazonaws.com/codecademy-content/courses/ltp2/css/bootstrap.min.css" rel="stylesheet">
-    <%= stylesheet_link_tag "style.css" %>
-</head>
-
-
 <body>
-    <div id="header">
-        <% if user_signed_in? %>
-            <%= link_to('Logout', destroy_user_session_path) %>
-        <% else %>
-            <%= link_to('Sign up', new_user_registration_path) %>
-            <br>
-            <%= link_to('Login', new_user_session_path) %>
-        <% end %>
-    </div>
+<%= render :partial => "shared/upper_bar" %>
 
-<div class="background" style="width: 800px">
-          <div class = "header" style="height: 130px"><!-- 2-->
-              <div class ="logo"><!-- 4-->
-                  <img src="/images/logo3.png" style="width: 120px; height: 90px; margin-left:40px;
-                      margin-top:20px">
-              </div><!-- 4-->
-          </div>
-
-          <div class = "bar"><!-- 2-->
-            <nav class="navbar navbar-inverse">
-                <div class="container-fluid"><!-- 3-->
-                    <ul class="nav nav-pills">
-                        <li role="presentation"><a href="file:///Applications/XAMPP/xamppfiles/htdocs/CSE110/Account/Account.html">ACCOUNT</a></li>
-                        <li role="presentation"><a href="file:///Applications/XAMPP/xamppfiles/htdocs/CSE110/Transfer/Transfer.html">TRANSFER</a></li>
-                        <li role="presentation"><a href="file:///Applications/XAMPP/xamppfiles/htdocs/CSE110/Deposit/Deposit.html">DEPOSIT</a></li>
-                        <li role="presentation"><a href="file:///Applications/XAMPP/xamppfiles/htdocs/CSE110/Withdraw/Withdraw.html">WITHDRAW</a></li>
-                        <li role="presentation"><%= link_to('LOGOUT', destroy_user_session_path)%></a></li>
-                    </ul>
-                </div><!-- 3-->
-            </nav>
-          </div><!-- 2-->
-          
-          <div class = "intro">
-              <img src = "/images/hehe.jpg" style = "width:650px">
-          </div>
 <%= yield %>
+
+<div class="foreground" style="width: 800px">
+<div class = "intro">
+  <img src = "/images/hehe.jpg" style = "width:650px">
+</div>
 
 
 <% if user_signed_in? %>
@@ -75,8 +39,8 @@
     <% if current_user.account_type == "teller" %>
         <div> WELCOME TELLER </div>
         <%= form_for current_user do |f| %>
-            <%= f.select :from_account, Account.all.collect {|account| [account.account_number.to_s + " - $" + account.balance.to_s, account.id]}, :prompt => "Select account to transfer from" %>
-            <%= f.select :to_account, Account.all.collect {|account| [account.account_number.to_s + " - $" + account.balance.to_s, account.id]}, :prompt => "Select account to transfer to" %>
+            <%= f.select :from_account, Account.all.collect {|account| [sprintf("%d - $%.2f", account.account_number,account.balance), account.id]}, :prompt => "Select account to transfer from" %>
+            <%= f.select :to_account, Account.all.collect {|account| [sprintf("%d - $%.2f",account.account_number,account.balance), account.id]}, :prompt => "Select account to transfer to" %>
 
             <%= text_field_tag 'amount', '0'%>
             <%= f.hidden_field 'id' %>
@@ -92,7 +56,7 @@
         <br />
 
         <%= form_for current_user do |f| %>
-            <%= f.select :from_account, Account.all.collect {|account| [account.account_number.to_s + " - updated on " + account.interest_date.strftime("%m/%d/%Y"), account.id]}, :prompt => "Select account to calculate interest for" %>
+            <%= f.select :from_account, Account.all.collect {|account| [sprintf("%d - calculated on %s",account.account_number, account.interest_date.strftime("%m/%d/%Y")), account.id]}, :prompt => "Select account to calculate interest for" %>
             <%= f.hidden_field 'id' %>
             <%= f.submit 'calculate interest' %>
             <script>
@@ -110,7 +74,7 @@
                     <tr>
                     <td align="center"><%= acc.account_type %></td>
                     <td align="center"><%= acc.account_number %></td>
-                    <td align="center"><%= sprintf("$%.2f",acc.balance) %></td>
+                    <td align="center"><%= sprintf("$ %.2f",acc.balance) %></td>
                     <td align="center"><%= text_field_tag 'amount', '0'%></td>
                     <%= f.hidden_field 'id' %>
                     <td><%= f.submit 'Deposit' %></td>
@@ -119,26 +83,26 @@
 
                     <% if acc.transactions.count != 0%>
                         <tr align="center">
-                        <td class="hidden <%=acc.id%>" style="font-weight:bold">Description</td>
-                        <td class="hidden <%=acc.id%>" style="font-weight:bold">By</td>
-                        <td class="hidden <%=acc.id%>" style="font-weight:bold">Amount</td>
-                        <td class="hidden <%=acc.id%>" style="font-weight:bold">Account Balance</td>
-                        <td class="hidden <%=acc.id%>" style="font-weight:bold">Date</td>
+                        <td class="hidden_data <%=acc.id%>" style="font-weight:bold">Description</td>
+                        <td class="hidden_data <%=acc.id%>" style="font-weight:bold">By</td>
+                        <td class="hidden_data <%=acc.id%>" style="font-weight:bold">Amount</td>
+                        <td class="hidden_data <%=acc.id%>" style="font-weight:bold">Account Balance</td>
+                        <td class="hidden_data <%=acc.id%>" style="font-weight:bold">Date</td>
                         </tr>
                     <% else %>
                         <tr align="center">
-                        <td class="hidden <%=acc.id%>" style="font-weight:bold" colspan="6">No transactions</td>
+                        <td class="hidden_data <%=acc.id%>" style="font-weight:bold" colspan="6">No transactions</td>
                         </tr>
 
                     <% end %>
 
                     <% acc.transactions.each do |transaction| %>
                     <tr align="center">
-                        <td class="hidden <%=acc.id%>"><%= transaction.transaction_type%></td>
-                        <td class="hidden <%=acc.id%>"><%= transaction.by%></td>
-                        <td class="hidden <%=acc.id%>"><%= sprintf("$%.2f",transaction.amount)%></div></td>
-                        <td class="hidden <%=acc.id%>"><%= sprintf("$%.2f",transaction.balance)%></div></td>
-                        <td class="hidden <%=acc.id%>"><%= transaction.created_at.strftime("%b. %d, %Y")%></div></td>
+                        <td class="hidden_data <%=acc.id%>"><%= transaction.transaction_type%></td>
+                        <td class="hidden_data <%=acc.id%>"><%= transaction.by%></td>
+                        <td class="hidden_data <%=acc.id%>"><%= sprintf("$ %.2f",transaction.amount)%></div></td>
+                        <td class="hidden_data <%=acc.id%>"><%= sprintf("$ %.2f",transaction.balance)%></div></td>
+                        <td class="hidden_data <%=acc.id%>"><%= transaction.created_at.strftime("%b. %d, %Y")%></div></td>
                     </tr>
                     <% end %>
                     <script>
@@ -165,8 +129,6 @@
     <% end %>
 </tbody>
 </table>
-<% else %>
-    <div>Not signed in </div>
 <% end %>
 
 </div>

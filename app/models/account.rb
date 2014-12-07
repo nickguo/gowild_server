@@ -73,5 +73,9 @@ class Account < ActiveRecord::Base
         return sprintf('Account %d granted interest of $%.2f, with %d transactions',
                         self.account_number, 0, @transactions.length)
     end
+
+    def as_json(options={})
+        super(:include => [:transactions])
+    end
 end
 

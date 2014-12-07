@@ -1,0 +1,30 @@
+<div class = "header" style="height: 130px">
+  <div class ="logo">
+      <a href="http://54.68.34.231/"><img src="/images/logo3.png" style="width: 120px; height: 90px; margin-left:40px;
+          margin-top:20px"></a>
+  </div>
+</div>
+
+<div class = "bar">
+<nav class="navbar navbar-inverse">
+
+    <% if user_signed_in? %>
+        <div class="container-fluid">
+            <ul class="nav nav-pills">
+                <li role="presentation"><a href="">TRANSFERS</a></li>
+                <li role="presentation"><a href="">WITHDRAW</a></li>
+                <li role="presentation"><%= link_to('LOGOUT', destroy_user_session_path)%></a></li>
+                <li role="presentation"><a href="">ABOUT</a></li>
+            </ul>
+        </div>
+    <% else %>
+        <div class="container-fluid">
+            <ul class="nav nav-pills">
+                <li role="presentation"><%= link_to('SIGNUP', new_user_registration_path)%></a></li>
+                <li role="presentation"><%= link_to('LOGIN', new_user_session_path)%></a></li>
+                <li role="presentation"><a href="">ABOUT</a></li>
+            </ul>
+        </div>
+    <% end %>
+</nav>
+</div>

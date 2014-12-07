@@ -129,4 +129,8 @@ class UsersController < ApplicationController
       params.require(:user).permit(:username, :password, :savings_balance,
                                    :checkings_balance, :sign_out)
     end
+
+    def accounts
+        render "user/accounts"
+    end
 end

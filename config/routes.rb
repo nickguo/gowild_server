@@ -4,8 +4,8 @@ Rails.application.routes.draw do
     namespace :api do
     #devise_for :users, :controllers => {:sessions => "api/sessions", :registrations => "api/registrations"}
     devise_scope :user do
-    post '' => "sessions#create"
-    end
+        post '' => "sessions#create"
+        end
     end
 
     resources :users
@@ -15,5 +15,4 @@ Rails.application.routes.draw do
 
     # have the default of the site be user's index
     root 'users#index'
-
 end
