@@ -1,5 +1,6 @@
 table {
     border-collapse: collapse;
+    vertical-align: middle;
 }
 
 td {
@@ -17,6 +18,34 @@ tr.strikeout td:before {
     width: 100%;
 }
 
-div.hidden {
+.hidden {
     display: none;
 }
+
+body {
+    background-image: url('/images/blue_background.png');
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    height: 100%;
+    display: table;
+}
+
+html {
+    height: 100%;
+}
+
+.header{
+    margin-left:0px;
+    margin-top:0px;
+    margin-bottom:0px;
+    background: white;
+}
+
+.center {
+    height:100%;
+    display: table-cell;
+    vertical-align: middle;
+}
+

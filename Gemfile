@@ -1,6 +1,10 @@
 source 'https://rubygems.org'
 
+# User login and authentication
 gem 'devise'
+
+# Easy time calculations
+gem 'time_diff'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.1.7'

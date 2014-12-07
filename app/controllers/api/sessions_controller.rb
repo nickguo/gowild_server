@@ -1,6 +1,6 @@
 class Api::SessionsController < Devise::SessionsController
 
-    # POST /api/sign_in
+    # POST /api
     # primary route parser that will sanitize and determine which action
     # since it inherits from devise's sessions controller, has authentication
     def create

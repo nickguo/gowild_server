@@ -6,4 +6,7 @@ class User < ActiveRecord::Base
 
     # one to many relationship with accounts
     has_many :accounts
+
+    # temporary instance vars that are used for transfers
+    attr_accessor :from_account, :to_account
 end

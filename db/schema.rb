@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141205061913) do
+ActiveRecord::Schema.define(version: 20141206235934) do
 
   create_table "accounts", force: true do |t|
     t.string   "account_type"
@@ -20,6 +20,7 @@ ActiveRecord::Schema.define(version: 20141205061913) do
     t.integer  "account_number"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "interest_date"
   end
 
   add_index "accounts", ["user_id"], name: "index_accounts_on_user_id", using: :btree
@@ -31,6 +32,7 @@ ActiveRecord::Schema.define(version: 20141205061913) do
     t.integer  "account_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.float    "balance",          limit: 24
   end
 
   add_index "transactions", ["account_id"], name: "index_transactions_on_account_id", using: :btree
@@ -48,6 +50,7 @@ ActiveRecord::Schema.define(version: 20141205061913) do
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
+    t.string   "account_type"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
