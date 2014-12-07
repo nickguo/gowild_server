@@ -36,6 +36,7 @@ class Api::SessionsController < Devise::SessionsController
         @account.balance = 0
         @account.account_type = "savings"
         @account.account_number = rand(1290000000 .. 1299999999)
+        @account.interest_date = Time.now
         # loop to find a new account in case account id was already used
         while Account.find_by_account_number(@account.account_number)!= nil
             @account.account_number = rand(1290000000 .. 1299999999)

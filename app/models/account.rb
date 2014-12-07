@@ -25,9 +25,15 @@ class Account < ActiveRecord::Base
             end
         end
 
+        # check if transferring to the same account
         if to_account == self
             return sprintf('Account %s cannot transfer to itself',
                            self.account_number)
+        end
+
+        # check if amount to transfer is more than 0
+        if amount <= 0
+            return sprintf('Please enter a transfer of more than $0.00')
         end
 
         if self.balance >= amount
@@ -55,7 +61,11 @@ class Account < ActiveRecord::Base
             return sprintf('Account has already been updated today')
         end
 
+        # get all transactions in the range from 
         @transactions = self.transactions.where(created_at: self.interest_date .. Time.now)
+        @transactions.order(:created_at)
+
+        @balance
 
         self.interest_date = Time.now
         self.save

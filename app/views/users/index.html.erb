@@ -6,8 +6,11 @@
     <meta charset="utf-8">
       <title>GoWild! Banking</title>
       <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+
+    <link href="http://s3.amazonaws.com/codecademy-content/courses/ltp2/css/bootstrap.min.css" rel="stylesheet">
     <%= stylesheet_link_tag "style.css" %>
 </head>
+
 
 <body>
     <div id="header">
@@ -20,11 +23,37 @@
         <% end %>
     </div>
 
+<div class="background" style="width: 800px">
+          <div class = "header" style="height: 130px"><!-- 2-->
+              <div class ="logo"><!-- 4-->
+                  <img src="/images/logo3.png" style="width: 120px; height: 90px; margin-left:40px;
+                      margin-top:20px">
+              </div><!-- 4-->
+          </div>
+
+          <div class = "bar"><!-- 2-->
+            <nav class="navbar navbar-inverse">
+                <div class="container-fluid"><!-- 3-->
+                    <ul class="nav nav-pills">
+                        <li role="presentation"><a href="file:///Applications/XAMPP/xamppfiles/htdocs/CSE110/Account/Account.html">ACCOUNT</a></li>
+                        <li role="presentation"><a href="file:///Applications/XAMPP/xamppfiles/htdocs/CSE110/Transfer/Transfer.html">TRANSFER</a></li>
+                        <li role="presentation"><a href="file:///Applications/XAMPP/xamppfiles/htdocs/CSE110/Deposit/Deposit.html">DEPOSIT</a></li>
+                        <li role="presentation"><a href="file:///Applications/XAMPP/xamppfiles/htdocs/CSE110/Withdraw/Withdraw.html">WITHDRAW</a></li>
+                        <li role="presentation"><%= link_to('LOGOUT', destroy_user_session_path)%></a></li>
+                    </ul>
+                </div><!-- 3-->
+            </nav>
+          </div><!-- 2-->
+          
+          <div class = "intro">
+              <img src = "/images/hehe.jpg" style = "width:650px">
+          </div>
 <%= yield %>
 
 
 <% if user_signed_in? %>
 
+<div class="welcome">
 <table>
 <% if current_user.account_type == 'user' %>
     <thead>
@@ -81,7 +110,7 @@
                     <tr>
                     <td align="center"><%= acc.account_type %></td>
                     <td align="center"><%= acc.account_number %></td>
-                    <td align="center"><%= acc.balance %></td>
+                    <td align="center"><%= sprintf("$%.2f",acc.balance) %></td>
                     <td align="center"><%= text_field_tag 'amount', '0'%></td>
                     <%= f.hidden_field 'id' %>
                     <td><%= f.submit 'Deposit' %></td>
@@ -107,8 +136,8 @@
                     <tr align="center">
                         <td class="hidden <%=acc.id%>"><%= transaction.transaction_type%></td>
                         <td class="hidden <%=acc.id%>"><%= transaction.by%></td>
-                        <td class="hidden <%=acc.id%>"><%= transaction.amount%></div></td>
-                        <td class="hidden <%=acc.id%>"><%= transaction.balance%></div></td>
+                        <td class="hidden <%=acc.id%>"><%= sprintf("$%.2f",transaction.amount)%></div></td>
+                        <td class="hidden <%=acc.id%>"><%= sprintf("$%.2f",transaction.balance)%></div></td>
                         <td class="hidden <%=acc.id%>"><%= transaction.created_at.strftime("%b. %d, %Y")%></div></td>
                     </tr>
                     <% end %>
@@ -140,8 +169,7 @@
     <div>Not signed in </div>
 <% end %>
 
-<br>
-
+</div>
 
 </body>
 

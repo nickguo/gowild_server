@@ -52,6 +52,27 @@ class UsersController < ApplicationController
         @info = params[:user]
         puts @info[:from_account]
         puts @info[:to_account]
+
+        if @info[:from_account] == ""
+            respond_to do |format|
+                format.html { redirect_to @user,
+                              notice: "Please select an account to transfer from"
+                            }
+                format.json { render :show, status: :ok, location: @user }
+            end
+            return
+        end
+
+        if @info[:to_account] == ""
+            respond_to do |format|
+                format.html { redirect_to @user,
+                              notice: "Please select an account to transfer to"
+                            }
+                format.json { render :show, status: :ok, location: @user }
+            end
+            return
+        end
+
         @from_account = Account.find(@info[:from_account])
         @to_account = Account.find(@info[:to_account])
         @amount = params[:amount].to_f
