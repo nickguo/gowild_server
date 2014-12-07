@@ -11,14 +11,22 @@ Rails.application.routes.draw do
     # only have update, since other account views are not needed
     resources :accounts, :only => [:update]
 
-    resources :users, :without => [:show]
+    resources :users, :only => [:update, :show, :index]
 
+    # routes for the upper task bar
+    get 'notice', :to => redirect("/notice.html.erb")
     get 'accounts' => "users#accounts"
     get 'transfers' => "users#transfers"
+    get 'withdrawals' => "users#withdrawals"
+    get 'deposits' => "users#deposits"
+    get 'interests_and_penalties' => "users#interests_and_penalties"
+    get 'create' => "users#create_account"
 
-#get 'accounts', to: 'users#accounts'
-#    get 'transfers', to: 'users#transfers'
-
+    # routes for errors controller
+    get '/404' => 'errors#not_found'
+    get '/422' => 'errors#server_error'
+    get '/500' => 'errors#server_error'
+    get '*path', :to => 'errors#not_found'
 
     # have the default of the site be user's index
     root 'users#index'

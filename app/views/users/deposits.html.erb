@@ -1,0 +1,10 @@
+<% if current_user.account_type == "teller" %>
+    <div>Deposit into User Accounts</div>
+    <%= form_for current_user do |f| %>
+        <%= f.select :to_account, Account.all.collect {|account| [sprintf("%d - $%.2f",account.account_number,account.balance), account.id]}, :prompt => "Select account to deposit into" %>
+
+        <%= text_field_tag 'amount', '0'%>
+        <%= f.hidden_field 'id' %>
+        <%= f.submit 'deposit' %>
+    <% end %>
+<% end %>

@@ -8,24 +8,35 @@
 <div class = "bar">
 <nav class="navbar navbar-inverse">
 
-    <% if user_signed_in? %>
+    <% if not user_signed_in? %>
+        <div class="container-fluid">
+            <ul class="nav nav-pills">
+                <li role="presentation"><%= link_to('SIGNUP', new_user_registration_path)%></a></li>
+                <li role="presentation"><%= link_to('LOGIN', new_user_session_path)%></a></li>
+            </ul>
+        </div>
+    <% elsif current_user.account_type == "user"  %>
         <div class="container-fluid">
             <ul class="nav nav-pills">
                 <li role="presentation"><%= link_to('ACCOUNTS', accounts_path)%></a></li>
                 <li role="presentation"><%= link_to('TRANSFERS', transfers_path)%></a></li>
-                <li role="presentation"><a href="">WITHDRAW</a></li>
+                <li role="presentation"><%= link_to('WITHDRAWALS', withdrawals_path)%></a></li>
                 <li role="presentation"><%= link_to('LOGOUT', destroy_user_session_path)%></a></li>
-                <li role="presentation"><a href="">ABOUT</a></li>
             </ul>
         </div>
     <% else %>
         <div class="container-fluid">
             <ul class="nav nav-pills">
-                <li role="presentation"><%= link_to('SIGNUP', new_user_registration_path)%></a></li>
-                <li role="presentation"><%= link_to('LOGIN', new_user_session_path)%></a></li>
-                <li role="presentation"><a href="">ABOUT</a></li>
+                <li role="presentation"><%= link_to('CREATE', create_path)%></a></li>
+                <li role="presentation"><%= link_to('ACCOUNTS', accounts_path)%></a></li>
+                <li role="presentation"><%= link_to('TRANSFERS', transfers_path)%></a></li>
+                <li role="presentation"><%= link_to('DEPOSITS', deposits_path)%></a></li>
+                <li role="presentation"><%= link_to('WITHDRAWALS', withdrawals_path)%></a></li>
+                <li role="presentation"><%= link_to('INTERESTS/PENALTIES', interests_and_penalties_path)%></a></li>
+                <li role="presentation"><%= link_to('LOGOUT', destroy_user_session_path)%></a></li>
             </ul>
         </div>
     <% end %>
+
 </nav>
 </div>

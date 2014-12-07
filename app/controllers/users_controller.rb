@@ -83,6 +83,7 @@ class UsersController < ApplicationController
             format.json { render :show, status: :ok, location: @user }
         end
     elsif params[:commit] == "calculate interest"
+        #TODO calculate math
         @info = params[:user]
         puts @info[:from_account]
         @account = Account.find(@info[:from_account])
@@ -93,6 +94,71 @@ class UsersController < ApplicationController
                         }
             format.json { render :show, status: :ok, location: @user }
         end
+
+    elsif params[:commit] == "deposit"
+        @info = params[:user]
+        puts @info[:to_account]
+
+        if @info[:to_account] == ""
+            respond_to do |format|
+                format.html { redirect_to @user,
+                              notice: "Please select an account to deposit into"
+                            }
+                format.json { render :show, status: :ok, location: @user }
+            end
+            return
+        end
+
+        @to_account = Account.find(@info[:to_account])
+        @amount = params[:amount].to_f
+
+        respond_to do |format|
+            format.html { redirect_to @user,
+                          notice: @to_account.deposit(@amount, @user)
+                        }
+            format.json { render :show, status: :ok, location: @user }
+        end
+
+    elsif params[:commit] == "create account"
+        @user_info = params[:user]
+        @user_iden = @user_info[:from_account]
+        @account_type = @user_info[:account_type]
+        puts "TYPE " + @account_type
+        puts "TYPE " + @account_type
+        puts "TYPE " + @account_type
+
+        if @user_iden == ""
+            respond_to do |format|
+                format.html { redirect_to @user,
+                              notice: "Please select a user account to create an account for"
+                            }
+                format.json { render :show, status: :ok, location: @user }
+            end
+            return
+        end
+
+        if @account_type == ""
+            respond_to do |format|
+                format.html { redirect_to @user,
+                              notice: "Please select an account type"
+                            }
+                format.json { render :show, status: :ok, location: @user }
+            end
+            return
+        end
+
+        @selected_user = User.find(@user_iden)
+
+        @new_account_number = @selected_user.create_account(@account_type)
+
+        respond_to do |format|
+            format.html { redirect_to @user,
+                          notice: sprintf("%s account %d created for %s", @account_type, @new_account_number, @selected_user.email)
+                        }
+            format.json { render :show, status: :ok, location: @user }
+        end
+
+
     else
         respond_to do |format|
           if @user.update(user_params)
@@ -118,6 +184,8 @@ class UsersController < ApplicationController
     end
   end
 
+  # Route actions to redirect to the different pages
+
   def accounts
     if current_user
       render "accounts"
@@ -134,6 +202,54 @@ class UsersController < ApplicationController
     end
   end
 
+  def withdrawals
+    if current_user
+      render "withdrawals"
+    else
+      render "public/not_signed_in"
+    end
+  end
+
+  # teller only
+  def deposits
+    if current_user
+      if current_user.account_type == "teller"
+        render "deposits"
+      else
+        render "public/not_allowed"
+      end
+    else
+      render "public/not_signed_in"
+    end
+  end
+  
+  # teller only
+  def create_account
+    if current_user
+      if current_user.account_type == "teller"
+        render "create_account"
+      else
+        render "public/not_allowed"
+      end
+    else
+      render "public/not_signed_in"
+    end
+  end
+
+  # teller only
+  def interests_and_penalties
+    if current_user
+      if current_user.account_type == "teller"
+        render "interests_and_penalties"
+      else
+        render "public/not_allowed"
+      end
+    else
+      render "public/not_signed_in"
+    end
+  end
+
+  # DO NOT CODE EXTERNAL FUNCTIONS UNDERNEATH THIS LINE-------------------------
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user

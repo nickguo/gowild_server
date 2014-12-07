@@ -1,5 +1,7 @@
+<% if current_user.account_type == "user" %>
+
 <table>
-    <h1>Account Balances</h1>
+    <h1>Your Account Balances</h1>
     <% if current_user.accounts.count <= 0 %>
         <thead>
             <th>No accounts found, please contact your local teller!</th>
@@ -76,5 +78,85 @@
             <% end %>
         <% end %>
     <% end %>
+
+ </table>
+
+<% else %>
+
+<table>
+    <h1>Account Balances For All Users</h1>
+    <thead>
+        <th>Owner</th>
+        <th>Account Type</th>
+        <th>Account Number</th>
+        <th>Balance</th>
+    </thead>
+
+    <% Account.all.each do |acc| %>
+        <%= form_for acc do |f| %>
+            <tr>
+            <td><%= acc.user.email %></td>
+            <td><%= acc.account_type %></td>
+            <td><%= acc.account_number %></td>
+            <td><%= sprintf("$ %.2f",acc.balance) %></td>
+            <td><button type='button' Class=<%=acc.id%>>Show transactions</button></td>
+            </tr>
+
+            <% if acc.transactions.count == 0%>
+                <tr>
+                <td class="hidden_data <%=acc.id%>" style="font-weight:bold" colspan="6">
+                    No transactions</td>
+                </tr>
+            <% else %>
+                <tr>
+                <td colspan="6">
+                <table>
+                    <th class="hidden_data <%=acc.id%>">Description</td>
+                    <th class="hidden_data <%=acc.id%>">By</td>
+                    <th class="hidden_data <%=acc.id%>">Amount</td>
+                    <th class="hidden_data <%=acc.id%>">Account Balance</td>
+                    <th class="hidden_data <%=acc.id%>">Date</td>
+
+                    <% acc.transactions.each do |transaction| %>
+                        <tr align="center">
+                            <td class="hidden_data <%=acc.id%>">
+                                <%= transaction.transaction_type%></td>
+                            <td class="hidden_data <%=acc.id%>">
+                                <%= transaction.by%></td>
+                            <td class="hidden_data <%=acc.id%>">
+                                <%= sprintf("$ %.2f",transaction.amount)%></div></td>
+                            <td class="hidden_data <%=acc.id%>">
+                                <%= sprintf("$ %.2f",transaction.balance)%></div></td>
+                            <td class="hidden_data <%=acc.id%>">
+                                <%= transaction.created_at.strftime("%b. %d, %Y")%></div></td>
+                        </tr>
+                    <% end %>
+                </table>
+                </td>
+                </tr>
+            <% end %>
+
+            <script>
+            $( "button."+<%=acc.id%> ).click(function() {
+                $( "td."+<%=acc.id%> ).slideToggle("fast");
+                $( "th."+<%=acc.id%> ).slideToggle("fast");
+                var el = $(this);
+                el.text() == "Show transactions" ? el.text("Hide transactions") :
+                                                   el.text("Show transactions");
+            });
+            </script>
+
+            <tr class="strikeout">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            </tr>
+
+        <% end %>
+    <% end %>
+<% end %>
 
  </table>

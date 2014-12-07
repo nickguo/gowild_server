@@ -74,6 +74,25 @@ class Account < ActiveRecord::Base
                         self.account_number, 0, @transactions.length)
     end
 
+    def deposit(amount, user)
+        # check if this user is able to move money from this account
+        if user.account_type != "teller"
+            if self.user != user
+                return sprintf('%s is not allowed to make deposits for account %d',
+                               user.email, self.account_number)
+            end
+        end
+
+        # check if amount to transfer is more than 0
+        if amount <= 0
+            return sprintf('Please enter a deposit of more than $0.00')
+        end
+
+        self.update_balance(amount, user, "deposit");
+        return sprintf('Deposit to account %d of %.2f was successful',
+                       self.account_number, amount) 
+    end
+
     def as_json(options={})
         super(:include => [:transactions])
     end
