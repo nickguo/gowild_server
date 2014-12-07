@@ -1,7 +1,5 @@
-
-
 class UsersController < ApplicationController
-  before_action :set_user, only: [:show, :edit, :update, :destroy]
+#  before_action :set_user, only: [:show, :edit, :update, :destroy]
 
   # GET /users
   # GET /users.json
@@ -12,6 +10,7 @@ class UsersController < ApplicationController
   # GET /users/1
   # GET /users/1.json
   def show
+    @user = set_user
   end
 
   # GET /users/new
@@ -111,10 +110,27 @@ class UsersController < ApplicationController
   # DELETE /users/1
   # DELETE /users/1.json
   def destroy
+    @user = set_user
     @user.destroy
     respond_to do |format|
       format.html { redirect_to users_url, notice: 'User was successfully destroyed.' }
       format.json { head :no_content }
+    end
+  end
+
+  def accounts
+    if current_user
+      render "accounts"
+    else
+      render "public/not_signed_in"
+    end
+  end
+
+  def transfers
+    if current_user
+      render "transfers"
+    else
+      render "public/not_signed_in"
     end
   end
 
@@ -130,7 +146,4 @@ class UsersController < ApplicationController
                                    :checkings_balance, :sign_out)
     end
 
-    def accounts
-        render "user/accounts"
-    end
 end

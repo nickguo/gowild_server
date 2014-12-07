@@ -1,10 +1,11 @@
 table {
     border-collapse: collapse;
     vertical-align: middle;
+    width:100%
 }
 
 td {
-    align: center;
+    text-align: center;
     position: relative;
     padding: 5px 10px;
 }
@@ -115,3 +116,8 @@ img {
     font-family: arial,sans-serif;
 }
 
+th {
+    padding: 0 15px 0 15px;
+    font-weight: bold;
+    text-align: center;
+}
