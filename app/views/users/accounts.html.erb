@@ -1,3 +1,5 @@
+<div class="foreground-content">
+
 <% if current_user.account_type == "user" %>
 
 <table>
@@ -95,11 +97,11 @@
     <% Account.all.each do |acc| %>
         <%= form_for acc do |f| %>
             <tr class= <%= "strikeout" if acc.closed %>>
-            <td bgcolor=<%="red" if acc.closed%> ><%= acc.owner %></td>
-            <td bgcolor=<%="red" if acc.closed%> ><%= acc.account_type %></td>
-            <td bgcolor=<%="red" if acc.closed%> ><%= acc.account_number %></td>
-            <td bgcolor=<%="red" if acc.closed%> ><%= sprintf("$ %.2f",acc.balance) %></td>
-            <td bgcolor=<%="red" if acc.closed%>><button type='button' Class=<%=acc.id%>>Show transactions</button></td>
+            <td > <%= acc.owner %></td>
+            <td > <%= acc.account_type %></td>
+            <td > <%= acc.account_number %></td>
+            <td style=<%="color: red;" if acc.closed%> ><%= sprintf("$ %.2f",acc.balance) %></td>
+            <td ><button type='button' Class=<%=acc.id%>>Show transactions</button></td>
             </tr>
 
             <% if acc.transactions.count == 0%>
@@ -160,3 +162,5 @@
 <% end %>
 
  </table>
+
+ </div>

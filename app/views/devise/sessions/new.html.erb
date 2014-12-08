@@ -3,6 +3,13 @@
     <img src = "/images/login.jpg" style="width:800px">
 
     <div class="foreground_content">
+
+        <div style="font-size:20px">
+            <% flash.each do |name, msg| %>
+            <%= content_tag :div, msg, :id => "flash_#{name}" if (msg.is_a?(String) and msg.start_with?('Invalid')) %>
+            <% end %>
+        </div>
+
         <h2>Log in</h2>
 
         <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>

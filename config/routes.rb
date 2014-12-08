@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     resources :accounts, :only => [:update]
 
     resources :users
+    resources :devise
 
     # routes for the upper task bar
     get 'notice', :to => redirect("/notice.html.erb")
@@ -24,10 +25,10 @@ Rails.application.routes.draw do
     get 'close_account' => "users#close_account"
 
     # routes for errors controller
-    get '/404' => 'errors#not_found'
-    get '/422' => 'errors#server_error'
-    get '/500' => 'errors#server_error'
-    get '*path', :to => 'errors#not_found'
+#    get '/404' => 'errors#not_found'
+#    get '/422' => 'errors#server_error'
+##    get '/500' => 'errors#server_error'
+#get '*path', :to => 'errors#not_found'
 
     # have the default of the site be user's index
     root 'users#index'

@@ -1,5 +1,6 @@
 <% if current_user.account_type == "teller" %>
-
+    <img src="/images/manage_withdrawals.jpg" width="800px">
+    <br></br>
 <% else %>
     <img src="/images/withdrawals.jpg" width="800px">
     <br></br>
@@ -7,9 +8,8 @@
 
 <div class="foreground_content">
     <% if current_user.account_type == "teller" %>
-        <div>Withdraw from User Accounts</div>
         <%= form_for current_user do |f| %>
-            <%= f.select :from_account, Account.all.collect {|account| [sprintf("%d - $%.2f",account.account_number,account.balance), account.id]}, :prompt => "Select account to withdraw from" %>
+            <%= f.select :from_account, Account.where("closed = false").collect {|account| [sprintf("%d - $%.2f",account.account_number,account.balance), account.id]}, :prompt => "Select account to withdraw from" %>
 
             <%= text_field_tag 'amount', '0'%>
             <%= f.hidden_field 'id' %>
@@ -17,10 +17,8 @@
         <% end %>
 
     <% else %>
-
-        <div>Withdraw from Your Accounts</div>
         <%= form_for current_user do |f| %>
-            <%= f.select :from_account, current_user.accounts.all.collect {|account| [sprintf("%d - $%.2f",account.account_number,account.balance), account.id]}, :prompt => "Select account to withdraw from" %>
+            <%= f.select :from_account, current_user.accounts.all.collect {|account| [sprintf("%d - %s - $%.2f",account.account_number,account.account_type,account.balance), account.id]}, :prompt => "Select account to withdraw from" %>
 
             <%= text_field_tag 'amount', '0'%>
             <%= f.hidden_field 'id' %>

@@ -3,6 +3,18 @@
       <a href="http://54.68.34.231/"><img src="/images/logo3.png" style="width: 120px; height: 90px; margin-left:40px;
           margin-top:20px"></a>
   </div>
+
+  <div class ="login info" style="text-align: right">
+      <% if user_signed_in? %>
+        <% if current_user.account_type == "teller" %>
+            <%= sprintf("Thanks for the awesome work, %s %s!",
+                        current_user.first_name, current_user.last_name)%>
+        <% else %>
+            <%= sprintf("Welcome, user %s %s!",
+                        current_user.first_name, current_user.last_name)%>
+        <% end %>
+      <% end %>
+  </div>
 </div>
 
 <div class = "bar">

@@ -97,6 +97,7 @@ button {
     text-align: left;
     display: inline-block;
     margin: 0 auto;
+    overflow: auto;
 }
 
 .divk{

@@ -3,7 +3,12 @@
 <br></br>
 
 <div class="foreground_content">
+
+
     <% if current_user.account_type == "teller" %>
+
+        <br>Closing a user's last bank account will remove that user from the system.</br>
+        <br></br>
         <%= form_for current_user do |f| %>
             <%= f.select :from_account, Account.where("closed = false").collect {|account| [sprintf("%d - $%.2f",account.account_number,account.balance), account.id]}, :prompt => "Select account to close" %>
 
@@ -11,6 +16,8 @@
             <%= f.submit 'close account' %>
         <% end %>
     <% else %>
+        <br>Closing your last bank account will remove you from the system.</br>
+        <br></br>
         <%= form_for current_user do |f| %>
             <%= f.select :from_account, current_user.accounts.where("closed = false").collect {|account| [sprintf("%d - $%.2f",account.account_number,account.balance), account.id]}, :prompt => "Select account to close"%>
 

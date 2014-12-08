@@ -5,7 +5,7 @@
 <div class="foreground_content">
     <% if current_user.account_type == "teller" %>
         <%= form_for current_user do |f| %>
-            <%= f.select :to_account, Account.all.collect {|account| [sprintf("%d - $%.2f",account.account_number,account.balance), account.id]}, :prompt => "Select account to deposit into" %>
+            <%= f.select :to_account, Account.where("closed = false").collect {|account| [sprintf("%d - %s - %s",account.account_number,account.account_type, account.owner), account.id]}, :prompt => "Select account to deposit into" %>
 
             <%= text_field_tag 'amount', '0'%>
             <%= f.hidden_field 'id' %>

@@ -39,10 +39,14 @@ class UsersController < ApplicationController
 
     if params[:commit] == "transfer"
         @info = params[:user]
-        puts @info[:from_account]
-        puts @info[:to_account]
+        @from_account_id = @info[:from_account]
+        @to_account_id = @info[:to_account]
 
-        if @info[:from_account] == ""
+        if not @to_account_id
+            @to_account_id = params[:to_account]
+        end
+
+        if @from_account_id == ""
             respond_to do |format|
                 format.html { redirect_to @user,
                               notice: "Please select an account to transfer from"
@@ -52,7 +56,7 @@ class UsersController < ApplicationController
             return
         end
 
-        if @info[:to_account] == ""
+        if @to_account_id  == ""
             respond_to do |format|
                 format.html { redirect_to @user,
                               notice: "Please select an account to transfer to"
@@ -62,8 +66,23 @@ class UsersController < ApplicationController
             return
         end
 
-        @from_account = Account.find(@info[:from_account])
-        @to_account = Account.find(@info[:to_account])
+        @from_account = Account.find_by_id(@from_account_id)
+        @to_account = Account.find_by_id(@to_account_id)
+
+        if @to_account == nil
+            @to_account = Account.where(account_number: @to_account_id, closed: false).first
+        end
+
+        if @to_account == nil
+            respond_to do |format|
+                format.html { redirect_to @user,
+                              notice: sprintf("Invalid account '%s' to transfer to", @to_account_id)
+                            }
+                format.json { render :show, status: :ok, location: @user }
+            end
+            return
+        end
+        
         @amount = params[:amount].to_f
 
         respond_to do |format|
@@ -72,6 +91,7 @@ class UsersController < ApplicationController
                         }
             format.json { render :show, status: :ok, location: @user }
         end
+
     elsif params[:commit] == "calculate interest"
         #TODO calculate math
         @info = params[:user]

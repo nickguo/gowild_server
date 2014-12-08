@@ -25,7 +25,6 @@ class Account < ActiveRecord::Base
         self.closed = true
         #drop this account from its user, but don't delete this account
         self.user.accounts.delete(self)
-        self.user.save
 
         # make a transaction record of the close
         @transaction = Transaction.new
@@ -34,19 +33,27 @@ class Account < ActiveRecord::Base
         self.transactions.push @transaction
         self.save
 
+        if self.user.accounts.size <= 0
+            puts "USER DESTROYED DOE"
+            self.user.destroy
+        end
+
         return sprintf('Account %d has been successfully closed', self.account_number)
     end
 
     # generic method for keeping track of transactions on this account
     def update_balance(amount, user, type)
-        self.balance += amount
+        int_amount = (amount * 100).to_i
+        float_amount = (int_amount.to_f / 100).to_f
+        self.balance += float_amount
         @transaction = Transaction.new
-        @transaction.amount = amount
+        @transaction.amount = float_amount.to_f
         @transaction.by = user.email
         @transaction.transaction_type = type
         @transaction.balance = self.balance
         self.transactions.push @transaction
         self.save
+        return float_amount
     end
 
     def transfer(to_account, amount, user)
@@ -71,8 +78,8 @@ class Account < ActiveRecord::Base
 
         if self.balance >= amount
             self.update_balance(-amount, user, "transfer to "+to_account.account_number.to_s)
-            to_account.update_balance(amount, user, "transfer from "+self.account_number.to_s)
-            return sprintf('Transfer from %d to %d of %.2f was successful',
+            amount=to_account.update_balance(amount, user, "transfer from "+self.account_number.to_s)
+            return sprintf('Transfer from %d to %d of $%.2f was successful',
                            self.account_number, to_account.account_number, amount) 
         else
             return sprintf('Transfer from %d failed. Please check for sufficient funds',
@@ -119,7 +126,7 @@ class Account < ActiveRecord::Base
             return sprintf('Please enter a deposit of more than $0.00')
         end
 
-        self.update_balance(amount, user, "deposit");
+        amount = self.update_balance(amount, user, "deposit");
         return sprintf('Deposit to account %d of $%.2f was successful',
                        self.account_number, amount) 
     end
@@ -143,9 +150,9 @@ class Account < ActiveRecord::Base
                             self.account_number)
         end
 
-        self.update_balance(-amount, user, "withdrawal");
+        amount = self.update_balance(-amount, user, "withdrawal");
         return sprintf('Withdrawl from account %d of $%.2f was successful',
-                       self.account_number, amount) 
+                       self.account_number, -amount) 
 
     end
 
