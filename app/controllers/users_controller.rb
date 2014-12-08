@@ -119,6 +119,29 @@ class UsersController < ApplicationController
             format.json { render :show, status: :ok, location: @user }
         end
 
+    elsif params[:commit] == "withdraw"
+        @info = params[:user]
+
+        if @info[:from_account] == ""
+            respond_to do |format|
+                format.html { redirect_to @user,
+                              notice: "Please select an account to withdraw from"
+                            }
+                format.json { render :show, status: :ok, location: @user }
+            end
+            return
+        end
+
+        @to_account = Account.find(@info[:from_account])
+        @amount = params[:amount].to_f
+
+        respond_to do |format|
+            format.html { redirect_to @user,
+                          notice: @to_account.withdraw(@amount, @user)
+                        }
+            format.json { render :show, status: :ok, location: @user }
+        end
+
     elsif params[:commit] == "create account"
         @user_info = params[:user]
         @user_iden = @user_info[:from_account]

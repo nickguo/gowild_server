@@ -79,6 +79,24 @@ body {
     background: white;
     height: auto;
     min-height: 800px;
+    text-align: center;
+}
+
+.picture {
+    margin-top: 100px;
+}
+
+button {
+    background-color: #F7DA17;
+    height: 37px;
+    border-radius: 10px;
+    color: black;
+}
+
+.foreground_content {
+    text-align: left;
+    display: inline-block;
+    margin: 0 auto;
 }
 
 .divk{
@@ -121,3 +139,5 @@ th {
     font-weight: bold;
     text-align: center;
 }
+
+

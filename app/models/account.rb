@@ -77,10 +77,8 @@ class Account < ActiveRecord::Base
     def deposit(amount, user)
         # check if this user is able to move money from this account
         if user.account_type != "teller"
-            if self.user != user
-                return sprintf('%s is not allowed to make deposits for account %d',
-                               user.email, self.account_number)
-            end
+            return sprintf('%s is not allowed to make deposits for account %d',
+                           user.email, self.account_number)
         end
 
         # check if amount to transfer is more than 0
@@ -89,8 +87,33 @@ class Account < ActiveRecord::Base
         end
 
         self.update_balance(amount, user, "deposit");
-        return sprintf('Deposit to account %d of %.2f was successful',
+        return sprintf('Deposit to account %d of $%.2f was successful',
                        self.account_number, amount) 
+    end
+
+    def withdraw(amount, user)
+        # check if this user is able to move money from this account
+        if user.account_type != "teller"
+            if self.user != user
+                return sprintf('%s is not allowed to make withdrawals for account %d',
+                               user.email, self.account_number)
+            end
+        end
+
+        # check if amount to transfer is more than 0
+        if amount <= 0
+            return sprintf('Please enter a withdrawal of more than $0.00')
+        end
+
+        if self.balance < amount
+            return sprintf('Withdrawal from %d failed. Please check for sufficient funds',
+                            self.account_number)
+        end
+
+        self.update_balance(-amount, user, "withdrawal");
+        return sprintf('Withdrawl from account %d of $%.2f was successful',
+                       self.account_number, amount) 
+
     end
 
     def as_json(options={})

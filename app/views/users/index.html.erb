@@ -6,8 +6,13 @@
 <body>
 
 <div class="foreground" style="width: 800px">
+
 <div class = "intro">
-  <img src = "/images/hehe.jpg" style = "width:650px">
+    <% if user_signed_in? %>
+        <img src = "/images/user_signed_in.png" style = "width:650px">
+    <% else %>
+        <img src = "/images/hehe.jpg" style = "width:650px">
+    <% end %>
 </div>
 
 
