@@ -14,6 +14,11 @@ class AccountsController < ApplicationController
     def new
         @user = User.find(params[:user_id])
         @account = @user.accounts.build
+        
+        # add custom fields to the account after initial creation
+        @account.closed = false
+        @account.owner = sprintf("%s %s", @user.first_name, @user.last_name)
+        @account.save
     end
 
     def edit

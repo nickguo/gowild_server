@@ -5,6 +5,39 @@ class Account < ActiveRecord::Base
     # one to many relationship with transactions
     has_many :transactions
 
+    def close_account(user)
+        if user.account_type != "teller"
+            if self.user != user
+                return sprintf('%s is not allowed to close account %d',
+                               user.email, self.account_number)
+            end
+        end
+
+        if self.closed
+            return sprintf('Account %d is already closed', self.account_number)
+        end
+
+        if self.balance > 0
+            return sprintf('Account %d has a non-zero balance. Please withdraw all funds before closing',
+                           self.account_number)
+        end
+
+        self.closed = true
+        #drop this account from its user, but don't delete this account
+        self.user.accounts.delete(self)
+        self.user.save
+
+        # make a transaction record of the close
+        @transaction = Transaction.new
+        @transaction.by = user.email
+        @transaction.transaction_type = "account closed"
+        self.transactions.push @transaction
+        self.save
+
+        return sprintf('Account %d has been successfully closed', self.account_number)
+    end
+
+    # generic method for keeping track of transactions on this account
     def update_balance(amount, user, type)
         self.balance += amount
         @transaction = Transaction.new

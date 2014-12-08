@@ -28,18 +28,8 @@ class UsersController < ApplicationController
   # POST /users
   # POST /users.json
   def create
-    @user = User.new(user_params)
     # only allow 'user' type accounts to be created via the website
-
-#respond_to do |format|
-#      if @user.save
-#        format.html { redirect_to @user, notice: 'User was successfully created.' }
-#        format.json { render :show, status: :created, location: @user }
-#      else
-#        format.html { render :new }
-#        format.json { render json: @user.errors, status: :unprocessable_entity }
-#      end
-#    end
+    @user = User.new(user_params)
   end
 
   # PATCH/PUT /users/1
@@ -181,11 +171,32 @@ class UsersController < ApplicationController
             format.json { render :show, status: :ok, location: @user }
         end
 
+    elsif params[:commit] == "close account"
+        @user_info = params[:user]
+        @account_iden = @user_info[:from_account]
 
-    else
+        if @account_iden == ""
+            respond_to do |format|
+                format.html { redirect_to @user,
+                              notice: "Please select an account to close"
+                            }
+                format.json { render :show, status: :ok, location: @user }
+                return
+            end
+        end
+
+        @selected_account = Account.find(@account_iden)
+
+        respond_to do |format|
+            format.html { redirect_to @user,
+                          notice: @selected_account.close_account(@user)
+                        }
+        end
+
+    else #no actions found
         respond_to do |format|
           if @user.update(user_params)
-            format.html { redirect_to @user, notice: 'User was successfully updated.' }
+            format.html { redirect_to @user, notice: 'Unknown action given.' }
             format.json { render :show, status: :ok, location: @user }
           else
             format.html { render :edit }
@@ -212,6 +223,14 @@ class UsersController < ApplicationController
   def accounts
     if current_user
       render "accounts"
+    else
+      render "public/not_signed_in"
+    end
+  end
+
+  def close_account
+    if current_user
+      render "close_account"
     else
       render "public/not_signed_in"
     end

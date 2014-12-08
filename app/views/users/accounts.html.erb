@@ -44,11 +44,11 @@
                                 <td class="hidden_data <%=acc.id%>">
                                     <%= transaction.by%></td>
                                 <td class="hidden_data <%=acc.id%>">
-                                    <%= sprintf("$ %.2f",transaction.amount)%></div></td>
+                                    <%= sprintf("$ %.2f",transaction.amount) if transaction.amount %> </td>
                                 <td class="hidden_data <%=acc.id%>">
-                                    <%= sprintf("$ %.2f",transaction.balance)%></div></td>
+                                    <%= sprintf("$ %.2f",transaction.balance) if transaction.balance%> </td>
                                 <td class="hidden_data <%=acc.id%>">
-                                    <%= transaction.created_at.strftime("%b. %d, %Y")%></div></td>
+                                    <%= transaction.created_at.strftime("%b. %d, %Y")%></td>
                             </tr>
                         <% end %>
                     </table>
@@ -94,12 +94,12 @@
 
     <% Account.all.each do |acc| %>
         <%= form_for acc do |f| %>
-            <tr>
-            <td><%= acc.user.email %></td>
-            <td><%= acc.account_type %></td>
-            <td><%= acc.account_number %></td>
-            <td><%= sprintf("$ %.2f",acc.balance) %></td>
-            <td><button type='button' Class=<%=acc.id%>>Show transactions</button></td>
+            <tr class= <%= "strikeout" if acc.closed %>>
+            <td bgcolor=<%="red" if acc.closed%> ><%= acc.owner %></td>
+            <td bgcolor=<%="red" if acc.closed%> ><%= acc.account_type %></td>
+            <td bgcolor=<%="red" if acc.closed%> ><%= acc.account_number %></td>
+            <td bgcolor=<%="red" if acc.closed%> ><%= sprintf("$ %.2f",acc.balance) %></td>
+            <td bgcolor=<%="red" if acc.closed%>><button type='button' Class=<%=acc.id%>>Show transactions</button></td>
             </tr>
 
             <% if acc.transactions.count == 0%>
@@ -124,11 +124,11 @@
                             <td class="hidden_data <%=acc.id%>">
                                 <%= transaction.by%></td>
                             <td class="hidden_data <%=acc.id%>">
-                                <%= sprintf("$ %.2f",transaction.amount)%></div></td>
+                                <%= sprintf("$ %.2f",transaction.amount) if transaction.amount %> </td>
                             <td class="hidden_data <%=acc.id%>">
-                                <%= sprintf("$ %.2f",transaction.balance)%></div></td>
+                                <%= sprintf("$ %.2f",transaction.balance) if transaction.balance%> </td>
                             <td class="hidden_data <%=acc.id%>">
-                                <%= transaction.created_at.strftime("%b. %d, %Y")%></div></td>
+                                <%= transaction.created_at.strftime("%b. %d, %Y")%></td>
                         </tr>
                     <% end %>
                 </table>

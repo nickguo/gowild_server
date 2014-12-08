@@ -21,6 +21,7 @@ Rails.application.routes.draw do
     get 'deposits' => "users#deposits"
     get 'interests_and_penalties' => "users#interests_and_penalties"
     get 'create' => "users#create_account"
+    get 'close_account' => "users#close_account"
 
     # routes for errors controller
     get '/404' => 'errors#not_found'

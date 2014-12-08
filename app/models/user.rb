@@ -19,12 +19,16 @@ class User < ActiveRecord::Base
         @account = Account.new
         @account.balance = 0
         @account.account_type = account_type
-        @account.account_number = rand(1290000000 .. 1299999999)
         @account.interest_date = Time.now
+        @account.closed = false
+        @account.owner = sprintf("%s %s", self.first_name, self.last_name)
+
+        @account.account_number = rand(1290000000 .. 1299999999)
         # loop to find a new account in case account id was already used
         while Account.find_by_account_number(@account.account_number)!= nil
             @account.account_number = rand(1290000000 .. 1299999999)
         end
+
         self.accounts.push @account
         self.save
         return @account.account_number
