@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  # checker for API calls from android app (requests come in & out as JSON)
   def json_request?
     request.format.json?
   end

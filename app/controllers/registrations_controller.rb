@@ -5,21 +5,10 @@ class RegistrationsController < Devise::RegistrationsController
     end
 
     def create
-        @user = User.new(user_params)
-        # only allow 'user' type accounts to be created via the website
-        puts "REACHED HERE"
+        super
+        # set account type to be 'user' since only users can be created externally
         @user.account_type = "user"
-
-        respond_to do |format|
-          if @user.save
-            current_user = @user
-            format.html { redirect_to @user, notice: 'User was successfully created.' }
-            format.json { render :show, status: :created, location: @user }
-          else
-            format.html { render :new }
-            format.json { render json: @user.errors, status: :unprocessable_entity }
-          end
-        end
+        @user.save
     end
 
     def update
@@ -29,7 +18,8 @@ class RegistrationsController < Devise::RegistrationsController
 
     private
         # Never trust parameters from the scary internet, only allow the white list through.
-        def user_params
-          params.require(:user).permit(:email, :password, :password_confirmation, :sign_out)
+        def sign_up_params
+          params.require(:user).permit(:first_name, :last_name, :address,
+                                       :email, :password, :password_confirmation)#:sign_out)
         end
 end
