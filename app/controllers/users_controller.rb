@@ -95,12 +95,20 @@ class UsersController < ApplicationController
     elsif params[:commit] == "calculate interest"
         #TODO calculate math
         @info = params[:user]
-        puts @info[:from_account]
+        if @info[:from_account] == ""
+            respond_to do |format|
+                format.html { redirect_to @user,
+                              notice: "Please select an account to calculate interests/penalties for"
+                            }
+                format.json { render :show, status: :ok, location: @user }
+            end
+            return
+        end
         @account = Account.find(@info[:from_account])
 
         respond_to do |format|
             format.html { redirect_to @user,
-                          notice: @account.update_interest(@user)
+                          notice: @account.update_interest_or_penalty(@user)
                         }
             format.json { render :show, status: :ok, location: @user }
         end

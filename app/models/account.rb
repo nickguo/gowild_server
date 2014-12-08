@@ -88,30 +88,108 @@ class Account < ActiveRecord::Base
     end
 
     #TODO
-    def update_interest(user)
+    def update_interest_or_penalty(user)
         if user.account_type != "teller"
-            return sprintf('%s is not allowed to grant interest %d',
+            return sprintf('%s is not allowed to grant interests or penalties %d',
                            user.email)
         end
 
+        # calculate how many seconds have passed since the last time interest was updated
         seconds = Time.now.to_i - self.interest_date.to_i
-        days = seconds / 10; #TODO change this constant to real time
 
+        # get the time passed in days now --> real days per second = 86400
+        seconds_per_day = 5; # 5 = 'seconds per day' to use instead to quicken testing
+        days = seconds / seconds_per_day; 
+
+        # check if interest was already granted today
         if days == 0
             return sprintf('Account has already been updated today')
         end
 
-        # get all transactions in the range from 
+        # check if '30 days' are up for the period
+        period = 30
+        if days < period
+            return sprintf('Interest/penalty period is not yet over. %d of %d days have passed.',
+                           days, period)
+        end
+
+        # get all transactions in the range from last updated to now
         @transactions = self.transactions.where(created_at: self.interest_date .. Time.now)
+
+        # order the transactions by the time that they were executed 
         @transactions.order(:created_at)
 
-        @balance
+        # we want to find the average balance over the period
+        @average_balance = 0
 
-        self.interest_date = Time.now
+        # check if there were no transactions in the period -> avg. balance never changed
+        if @transactions.size == 0
+            @average_balance = self.balance
+        else
+            # calculate the running balance by calculating the balance at the end of each day
+            # --> done by iterating over the days and using transaction history
+
+            # running balance for each of the days
+            total_balance = 0 
+            # initalize prev_balance to be the balance before the first transaction
+            prev_balance = @transactions.first.balance - @transactions.first.amount
+            prev_balance_init = prev_balance
+            # the starting time for day 0 (starting from the end of previous interest date)
+            time_i = self.interest_date.to_i
+
+            cur_day = 0
+
+            while cur_day < days
+                # get all of the transactions of this day period from the initial transaction query
+                transactions_i = @transactions.where(created_at:
+                                                        Time.at(time_i + cur_day*seconds_per_day) ..
+                                                        Time.at(time_i + (cur_day+1)*seconds_per_day))
+
+                # if any transactions occurred during this day, update the balance to be the final one of the day
+                # otherwise, if no transactions, prev_balance doesn't change.
+                # also have to check to see if first transaction was alone since we have already accounted for head balances
+                if transactions_i.size > 0
+                    prev_balance = transactions_i.last.balance
+                end
+
+                # update the total balance and the time for i
+                total_balance += prev_balance
+                cur_day += 1
+            end
+
+            # average balance is the total running balance divided by days
+            @average_balance = total_balance / days
+        end
+
+
+        # detailed message:
+        #return sprintf('Account %d granted interest of $%.2f, with %d transactions',
+        #                self.account_number, 0, @transactions.length)
+        # regular message:
+               
+        # set new time stamp a few seconds back so that the interest becomes latest
+        self.interest_date = Time.at(Time.now.to_i - 2)
         self.save
 
-        return sprintf('Account %d granted interest of $%.2f, with %d transactions',
-                        self.account_number, 0, @transactions.length)
+        if @average_balance < 100
+            penalty = self.update_balance(-25, user, "Penalty for low balance")
+            return sprintf("%d penalized $%.2f for low balance over %d days",
+                           self.account_number, penalty, days)
+        else
+            interest = 0
+            if @average_balance > 3000
+                interest = self.account_type == "checkings" ? 0.03 : 0.04
+            elsif @average_balance > 2000
+                interest = self.account_type == "checkings" ? 0.02 : 0.03 
+            elsif @average_balance > 1000
+                interest = self.account_type == "checkings" ? 0.01 : 0.02
+            end
+
+            amount = self.update_balance(interest * @average_balance, user, "Interest")
+            return sprintf("%d granted $%.2f for %.2f percent interest on
+                            average balance $%.2f for %d days",
+                           self.account_number, amount, interest, @average_balance, days)
+        end
     end
 
     def deposit(amount, user)
