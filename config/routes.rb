@@ -11,7 +11,7 @@ Rails.application.routes.draw do
     # only have update, since other account views are not needed
     resources :accounts, :only => [:update]
 
-    resources :users, :only => [:update, :show, :index]
+    resources :users
 
     # routes for the upper task bar
     get 'notice', :to => redirect("/notice.html.erb")
