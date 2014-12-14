@@ -4,8 +4,11 @@ class RegistrationsController < Devise::RegistrationsController
         puts "entered custom new"
     end
 
+    # override
     def create
+        # perform normal devise registrations
         super
+
         # set account type to be 'user' since only users can be created externally
         @user.account_type = "user"
         @user.save

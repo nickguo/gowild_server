@@ -11,6 +11,10 @@ class Account < ActiveRecord::Base
                 return sprintf('%s is not allowed to close account %d',
                                user.email, self.account_number)
             end
+
+            if user.accounts.size == 1
+                return sprintf("Please have a teller close your final account!")
+            end
         end
 
         if self.closed

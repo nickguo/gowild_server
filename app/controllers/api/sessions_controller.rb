@@ -25,7 +25,7 @@ class Api::SessionsController < Devise::SessionsController
         end
     end
 
-    # definitions for lolgin
+    # definitions for login
 
     # returns the user's information
     def login 
@@ -74,7 +74,7 @@ class Api::SessionsController < Devise::SessionsController
             return
         end
 
-        if @account.balance - @amount > 0
+        if @account.balance - @amount >= 0
             @account.update_balance(-@amount, current_user, "withdraw")
             render :json => {:success => true}
         else

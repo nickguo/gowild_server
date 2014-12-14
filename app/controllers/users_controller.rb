@@ -37,15 +37,20 @@ class UsersController < ApplicationController
   def update
     @user = set_user
 
+    # check the parameter for 'commit' coming in and switch accordingly
+
     if params[:commit] == "transfer"
+        # get the transfer info
         @info = params[:user]
         @from_account_id = @info[:from_account]
         @to_account_id = @info[:to_account]
 
+        # setup for multiple routes to here in case to_account_id is provided differently
         if not @to_account_id
             @to_account_id = params[:to_account]
         end
 
+        # perform basic sanitation and redirect upon error
         if @from_account_id == ""
             respond_to do |format|
                 format.html { redirect_to @user,
@@ -66,9 +71,11 @@ class UsersController < ApplicationController
             return
         end
 
+        # find the accounts
         @from_account = Account.find_by_id(@from_account_id)
         @to_account = Account.find_by_id(@to_account_id)
 
+        # check if accounts exist
         if @to_account == nil
             @to_account = Account.where(account_number: @to_account_id, closed: false).first
         end
@@ -83,6 +90,7 @@ class UsersController < ApplicationController
             return
         end
         
+        # transfer the amount
         @amount = params[:amount].to_f
 
         respond_to do |format|
@@ -93,7 +101,7 @@ class UsersController < ApplicationController
         end
 
     elsif params[:commit] == "calculate interest"
-        #TODO calculate math
+        # get account information and check that it's valid
         @info = params[:user]
         if @info[:from_account] == ""
             respond_to do |format|
@@ -104,6 +112,8 @@ class UsersController < ApplicationController
             end
             return
         end
+
+        # calculate interest after sanitation
         @account = Account.find(@info[:from_account])
 
         respond_to do |format|
@@ -114,6 +124,7 @@ class UsersController < ApplicationController
         end
 
     elsif params[:commit] == "deposit"
+        # get target account information and sanitize
         @info = params[:user]
         puts @info[:to_account]
 
@@ -127,6 +138,7 @@ class UsersController < ApplicationController
             return
         end
 
+        # deposit into the targeted account
         @to_account = Account.find(@info[:to_account])
         @amount = params[:amount].to_f
 
@@ -160,14 +172,13 @@ class UsersController < ApplicationController
             format.json { render :show, status: :ok, location: @user }
         end
 
-    elsif params[:commit] == "create account"
+    elsif params[:commit] == "create account" # for a bank acc, not for a user acc
+        # get account information as given        
         @user_info = params[:user]
         @user_iden = @user_info[:from_account]
         @account_type = @user_info[:account_type]
-        puts "TYPE " + @account_type
-        puts "TYPE " + @account_type
-        puts "TYPE " + @account_type
 
+        # sanitize
         if @user_iden == ""
             respond_to do |format|
                 format.html { redirect_to @user,
@@ -188,6 +199,7 @@ class UsersController < ApplicationController
             return
         end
 
+        # find the selected user and create an account
         @selected_user = User.find(@user_iden)
 
         @new_account_number = @selected_user.create_account(@account_type)
@@ -200,6 +212,7 @@ class UsersController < ApplicationController
         end
 
     elsif params[:commit] == "close account"
+        # obtain information for account to close
         @user_info = params[:user]
         @account_iden = @user_info[:from_account]
 
@@ -209,16 +222,18 @@ class UsersController < ApplicationController
                               notice: "Please select an account to close"
                             }
                 format.json { render :show, status: :ok, location: @user }
-                return
             end
+            return
         end
 
+        # find the account to be closed
         @selected_account = Account.find(@account_iden)
 
         respond_to do |format|
             format.html { redirect_to @user,
                           notice: @selected_account.close_account(@user)
                         }
+            format.json { render :show, status: :ok, location: @user }
         end
 
     else #no actions found
